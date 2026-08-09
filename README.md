@@ -2,6 +2,11 @@
 
 > FCM push and transactional notification webhooks for SharingBridge.
 
+## Runtime plan
+
+**Today:** Node.js 20.  
+**Next rewrite:** **Spring Boot** (same `POST /internal/connection-ready` + `GET /health` contracts; Docker on Render). Tracked in [STATUS.md](https://github.com/sharingbridge/sharingbridge/blob/main/development/STATUS.md).
+
 ## Overview
 
 Receives **connection-ready** events from `sharingbridge-integration-service` and sends **FCM push** to registered device tokens.
