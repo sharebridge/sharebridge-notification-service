@@ -7,6 +7,8 @@
 **Today:** Node.js 20.  
 **Next rewrite:** **Spring Boot** (same `POST /internal/connection-ready` + `GET /health` contracts; Docker on Render). Tracked in [STATUS.md](https://github.com/sharingbridge/sharingbridge/blob/main/development/STATUS.md).
 
+**DB access:** Adopt the shared `DB_POOL_*` / `DB_RETRY_*` env contract in the Spring rewrite (reference implementation: user-service / Npgsql) — [Database client pool & retry (standard)](https://github.com/sharingbridge/sharingbridge/blob/main/configuration/environment-variables.md#database-client-pool--retry-standard). Prefer Supabase **session** pooler (`:5432`) for long-lived JVM processes.
+
 ## Overview
 
 Receives **connection-ready** events from `sharingbridge-integration-service` and sends **FCM push** to registered device tokens.
