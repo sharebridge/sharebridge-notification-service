@@ -1,23 +1,21 @@
-# Render Blueprint — one Web Service. Full guide:
+# Render Blueprint — Docker (Spring Boot / Java 21). Full guide:
 # https://github.com/sharingbridge/sharingbridge/blob/main/configuration/backend-render.md
 services:
   - type: web
     name: sharingbridge-notification-service
-    runtime: node
+    runtime: docker
     plan: free
     branch: main
     autoDeploy: true
-    buildCommand: npm install
-    startCommand: npm start
     healthCheckPath: /health
     envVars:
-      - key: NODE_VERSION
-        value: "20"
       - key: DATABASE_URL
         sync: false
       - key: WEBHOOK_SECRET
         generateValue: true
       - key: FIREBASE_SERVICE_ACCOUNT_JSON
         sync: false
+      - key: DB_SUPABASE_POOL_6543_4TR_5432_4SESN
+        value: "5432"
       - key: LOG_LEVEL
         value: warn

@@ -1,48 +1,48 @@
 # sharingbridge-notification-service
 
-> FCM push and transactional notification webhooks for SharingBridge.
+> FCM push on connection-ready webhooks — **Spring Boot 3 / Java 21**
 
-## Runtime plan
+## Status
 
-**Today:** Node.js 20.  
-**Next rewrite:** **Spring Boot** (same `POST /internal/connection-ready` + `GET /health` contracts; Docker on Render). Tracked in [STATUS.md](https://github.com/sharingbridge/sharingbridge/blob/main/development/STATUS.md).
+**Current runtime:** Spring Boot (Docker on Render).  
+**Legacy:** Node.js MVP under [`legacy-node/`](./legacy-node/) for rollback reference.
 
-**DB access:** Adopt the shared `DB_POOL_*` / `DB_RETRY_*` env contract in the Spring rewrite (reference implementation: user-service / Npgsql) — [Database client pool & retry (standard)](https://github.com/sharingbridge/sharingbridge/blob/main/configuration/environment-variables.md#database-client-pool--retry-standard). Prefer Supabase **session** pooler (`:5432`) for long-lived JVM processes.
+| Method | Path | Notes |
+|--------|------|--------|
+| GET | `/health` | Render health check |
+| POST | `/internal/connection-ready` | Header `X-Webhook-Secret` when `WEBHOOK_SECRET` set |
 
-## Overview
+## Run locally
 
-Receives **connection-ready** events from `sharingbridge-integration-service` and sends **FCM push** to registered device tokens.
+Requires **JDK 21** + Maven.
 
-**Route:** `POST /internal/connection-ready`
+```bash
+cp .env.example .env
+# Export vars into the shell (Spring does not load .env automatically), then:
+mvn test
+mvn spring-boot:run
+```
 
-**Health:** `GET /health`
+Health: `GET http://localhost:8093/health`
 
 ## Environment
 
-Deploy on Render: [environment-variables.md](https://github.com/sharingbridge/sharingbridge/blob/main/configuration/environment-variables.md#sharingbridge-notification-service). **Step-by-step:** [notification-service-local.md](https://github.com/sharingbridge/sharingbridge/blob/main/configuration/notification-service-local.md) · [backend-render.md](https://github.com/sharingbridge/sharingbridge/blob/main/configuration/backend-render.md) § Notification service.
+See [environment-variables.md](https://github.com/sharingbridge/sharingbridge/blob/main/configuration/environment-variables.md#sharingbridge-notification-service).
 
-| Variable | Purpose |
-|----------|---------|
-| `DATABASE_URL` | Same Supabase Postgres as other services (`device_tokens` table) |
-| `WEBHOOK_SECRET` | Must match integration-service `CONNECTION_NOTIFY_WEBHOOK_SECRET` |
-| `FIREBASE_SERVICE_ACCOUNT_PATH` or `FIREBASE_SERVICE_ACCOUNT_JSON` | Firebase Admin credentials |
+Shared DB knobs (same names as user-service): `DB_POOL_*`, `DB_RETRY_*`, `DB_SUPABASE_POOL_6543_4TR_5432_4SESN` (`5432` \| `6543`).
 
-Integration-service sets:
+## Deploy (Render)
+
+`runtime: docker` — see `Dockerfile` and `render.yaml`. Clear any leftover Node build/start commands.
+
+Integration-service:
 
 ```text
 CONNECTION_NOTIFY_WEBHOOK_URL=https://<notification-host>/internal/connection-ready
 CONNECTION_NOTIFY_WEBHOOK_SECRET=<same as WEBHOOK_SECRET>
 ```
 
-## Local run
-
-```bash
-npm install
-npm test
-npm start
-```
-
-## Payload (from integration-service)
+## Payload
 
 ```json
 {
@@ -55,8 +55,4 @@ npm start
 }
 ```
 
-Push uses `recipient_user_ids` → `device_tokens` table. Email delivery can be added later (Resend/SendGrid).
-
----
-
-Part of the [SharingBridge](https://github.com/sharingbridge/sharingbridge) ecosystem.
+Part of [SharingBridge](https://github.com/sharingbridge/sharingbridge).
