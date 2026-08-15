@@ -4,8 +4,7 @@
 
 ## Status
 
-**Current runtime:** Spring Boot (Docker on Render).  
-**Legacy:** Node.js MVP under [`legacy-node/`](./legacy-node/) for rollback reference.
+**Current runtime:** Spring Boot (Docker on Render).
 
 | Method | Path | Notes |
 |--------|------|--------|

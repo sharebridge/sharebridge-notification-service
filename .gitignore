@@ -6,11 +6,30 @@ target/
 .project
 .settings/
 
-# Node legacy / leftover install
+# Java / Maven
+target/
+.idea/
+*.iml
+.classpath
+.project
+.settings/
+
+# Leftover Node installs (never commit)
 node_modules/
-legacy-node/node_modules/
 
 # Testing
+coverage/
+
+# Environment (never commit secrets)
+.env*
+!.env.example
+firebase-adminsdk*.json
+
+# IDE / OS
+.vscode/
+.DS_Store
+Thumbs.db
+*.log
 coverage/
 
 # Environment (never commit secrets)
